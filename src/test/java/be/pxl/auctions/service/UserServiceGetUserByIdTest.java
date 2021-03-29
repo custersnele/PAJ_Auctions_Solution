@@ -2,20 +2,27 @@ package be.pxl.auctions.service;
 
 import be.pxl.auctions.dao.UserDao;
 import be.pxl.auctions.model.User;
+import be.pxl.auctions.rest.resource.UserDTO;
+import be.pxl.auctions.util.exception.UserNotFoundException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
+import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.time.LocalDate;
+import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.when;
 
+@ExtendWith(MockitoExtension.class)
 public class UserServiceGetUserByIdTest {
-	/*private static final long USER_ID = 5l;
+	private static final long USER_ID = 5L;
 
 	@Mock
 	private UserDao userDao;
@@ -25,8 +32,8 @@ public class UserServiceGetUserByIdTest {
 
 	@BeforeEach
 	public void init() {
-		MockitoAnnotations.initMocks(this);
 		user = new User();
+		user.setId(USER_ID);
 		user.setFirstName("Mark");
 		user.setLastName("Zuckerberg");
 		user.setDateOfBirth(LocalDate.of(1989, 5, 3));
@@ -35,14 +42,15 @@ public class UserServiceGetUserByIdTest {
 
 	@Test
 	public void returnsNullWhenNoUserWithGivenIdFound() {
-		when(userDao.findUserById(USER_ID)).thenReturn(null);
+		when(userDao.findUserById(USER_ID)).thenReturn(Optional.empty());
 
-		assertNull(userService.getUserById(USER_ID));
+		assertThrows(UserNotFoundException.class, () ->userService.getUserById(USER_ID));
 	}
 
 	@Test
 	public void returnsUserWhenUserFoundWithGivenId() {
-		when(userDao.findUserById(USER_ID)).thenReturn(user);
-		assertEquals(user, userService.getUserById(USER_ID));
-	} */
+		when(userDao.findUserById(USER_ID)).thenReturn(Optional.of(user));
+		UserDTO userById = userService.getUserById(USER_ID);
+		assertEquals(USER_ID, userById.getId());
+	}
 }
