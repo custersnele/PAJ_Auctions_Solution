@@ -6,6 +6,7 @@ import javax.persistence.*;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 @Entity
 @Table(name = "auctions")
@@ -50,9 +51,9 @@ public class Auction {
         if (bid.getDate().isAfter(endDate)) {
             throw new InvalidBidException("This auction is closed.");
         }
-        Bid highestBid = findHighestBid();
-        if (highestBid != null && bid.getAmount() <= highestBid.getAmount()) {
-            throw new InvalidBidException("Bid not allowed. Your bid should exceed €" + highestBid.getAmount());
+        Optional<Bid> highestBid = findHighestBid();
+        if (highestBid.isPresent() && bid.getAmount() <= highestBid.get().getAmount()) {
+            throw new InvalidBidException("Bid not allowed. Your bid should exceed €" + highestBid.get().getAmount());
         }
         bids.add(bid);
         bid.setAuction(this);
@@ -66,17 +67,11 @@ public class Auction {
         this.bids = bids;
     }
 
-    public Bid findHighestBid() {
-        if (bids.isEmpty()) {
-            return null;
-        }
-        Bid highestBid = bids.get(0);
-        for (int i = 1; i < bids.size(); i++) {
-            if (bids.get(i).getAmount() > highestBid.getAmount()) {
-                highestBid = bids.get(i);
-            }
-        }
-        return highestBid;
+    public Optional<Bid> findHighestBid() {
+       return bids.stream().max((b1, b2) -> Double.compare(b1.getAmount(), b2.getAmount()));
     }
 
+	public boolean isFinished() {
+		return LocalDate.now().isAfter(endDate);
+	}
 }
