@@ -9,10 +9,13 @@ import java.util.List;
 
 public final class AuctionBuilder {
 
+	public static final String DESCRIPTION = "dummy";
+	public static final LocalDate END_DATE = LocalDate.now().plusMonths(1);
+
 	public List<Bid> bids = new ArrayList<>();
 	private long id;
-	private String description;
-	private LocalDate endDate;
+	private String description = DESCRIPTION;
+	private LocalDate endDate = END_DATE;
 
 	private AuctionBuilder() {}
 

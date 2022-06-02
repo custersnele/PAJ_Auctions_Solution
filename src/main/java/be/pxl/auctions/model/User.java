@@ -70,4 +70,24 @@ public class User {
 	public int getAge() {
 		return (int) ChronoUnit.YEARS.between(dateOfBirth, LocalDate.now());
 	}
+
+
+	@Override
+	public boolean equals(Object o) {
+		if (this == o) {
+			return true;
+		}
+		if (o == null || getClass() != o.getClass()) {
+			return false;
+		}
+
+		User user = (User) o;
+
+		return id == user.id;
+	}
+
+	@Override
+	public int hashCode() {
+		return (int) (id ^ (id >>> 32));
+	}
 }

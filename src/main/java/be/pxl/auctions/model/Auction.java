@@ -52,8 +52,13 @@ public class Auction {
             throw new InvalidBidException("This auction is closed.");
         }
         Optional<Bid> highestBid = findHighestBid();
-        if (highestBid.isPresent() && bid.getAmount() <= highestBid.get().getAmount()) {
-            throw new InvalidBidException("Bid not allowed. Your bid should exceed €" + highestBid.get().getAmount());
+        if (highestBid.isPresent()) {
+			if (bid.getAmount() <= highestBid.get().getAmount()) {
+				throw new InvalidBidException("Bid not allowed. Your bid should exceed €" + highestBid.get().getAmount());
+			}
+			if (highestBid.get().getUser().equals(bid.getUser())) {
+				throw new InvalidBidException("Bidder already has highest bid.");
+			}
         }
         bids.add(bid);
         bid.setAuction(this);
@@ -73,5 +78,9 @@ public class Auction {
 
 	public boolean isFinished() {
 		return LocalDate.now().isAfter(endDate);
+	}
+
+	public boolean hasBids() {
+		return bids.size() > 0;
 	}
 }
