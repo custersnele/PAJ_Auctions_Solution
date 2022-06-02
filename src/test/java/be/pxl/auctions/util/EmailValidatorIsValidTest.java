@@ -9,11 +9,13 @@ public class EmailValidatorIsValidTest {
 
 	@Test
 	public void returnsTrueWhenValidEmail() {
+
 		assertTrue(EmailValidator.isValid("nele.custers@pxl.be"));
 	}
 
 	@Test
 	public void returnsFalseWhenAtSignMissing() {
+
 		assertFalse(EmailValidator.isValid("nele.custers&pxl.be"));
 	}
 

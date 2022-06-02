@@ -16,6 +16,7 @@ import java.time.LocalDate;
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.when;
@@ -41,16 +42,18 @@ public class UserServiceGetUserByIdTest {
 	}
 
 	@Test
-	public void returnsNullWhenNoUserWithGivenIdFound() {
+	public void throwsUserNotFoundExceptionWhenNoUserWithGivenIdFound() {
 		when(userDao.findUserById(USER_ID)).thenReturn(Optional.empty());
 
-		assertThrows(UserNotFoundException.class, () ->userService.getUserById(USER_ID));
+		assertThrows(UserNotFoundException.class, () -> userService.getUserById(USER_ID));
 	}
 
 	@Test
 	public void returnsUserWhenUserFoundWithGivenId() {
 		when(userDao.findUserById(USER_ID)).thenReturn(Optional.of(user));
 		UserDTO userById = userService.getUserById(USER_ID);
+		assertNotNull(userById);
 		assertEquals(USER_ID, userById.getId());
+		assertEquals(user.getFirstName(), userById.getFirstName());
 	}
 }

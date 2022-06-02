@@ -29,11 +29,11 @@ public class UserService {
 	private UserDao userDao;
 
 	public List<UserDTO> getAllUsers() {
-		return userDao.findAllUsers().stream().map(this::mapToUserResource).collect(Collectors.toList());
+		return userDao.findAllUsers().stream().map(this::mapToUserDTO).collect(Collectors.toList());
 	}
 
 	public UserDTO getUserById(long userId) {
-		return userDao.findUserById(userId).map(this::mapToUserResource).orElseThrow(()  -> new UserNotFoundException("Unable to find User with id [" + userId + "]"));
+		return userDao.findUserById(userId).map(this::mapToUserDTO).orElseThrow(()  -> new UserNotFoundException("Unable to find User with id [" + userId + "]"));
 	}
 
 	public UserDTO createUser(UserCreateResource userInfo) throws RequiredFieldException, InvalidEmailException, DuplicateEmailException, InvalidDateException {
@@ -60,13 +60,13 @@ public class UserService {
 		if (user.getDateOfBirth().isAfter(LocalDate.now())) {
 			throw new InvalidDateException("DateOfBirth cannot be in the future.");
 		}
-		return mapToUserResource(userDao.saveUser(user));
+		return mapToUserDTO(userDao.saveUser(user));
 	}
 
-	private UserDTO mapToUserResource(User user) {
+	private UserDTO mapToUserDTO(User user) {
 		UserDTO userDTO = new UserDTO();
 		userDTO.setId(user.getId());
-		userDTO.setFirstName(user.getFirstName());
+		//userDTO.setFirstName(user.getFirstName());
 		userDTO.setLastName(user.getLastName());
 		userDTO.setDateOfBirth(user.getDateOfBirth());
 		userDTO.setAge(user.getAge());
