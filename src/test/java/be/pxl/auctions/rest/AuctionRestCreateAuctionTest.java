@@ -3,6 +3,7 @@ package be.pxl.auctions.rest;
 import be.pxl.auctions.model.builder.AuctionDTOBuilder;
 import be.pxl.auctions.rest.resource.AuctionCreateResource;
 import be.pxl.auctions.service.AuctionService;
+import be.pxl.auctions.service.BidService;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -25,7 +26,8 @@ public class AuctionRestCreateAuctionTest {
 	private DateTimeFormatter FORMATTER = DateTimeFormatter.ofPattern("dd-MM-yyyy");
 	@Autowired
 	private MockMvc mockMvc;
-
+	@MockBean
+	private BidService bidService;
 	@MockBean
 	private AuctionService auctionService;
 

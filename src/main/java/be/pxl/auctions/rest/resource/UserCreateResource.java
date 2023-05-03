@@ -1,8 +1,15 @@
 package be.pxl.auctions.rest.resource;
 
+import jakarta.validation.constraints.Email;
+import jakarta.validation.constraints.NotBlank;
+
 public class UserCreateResource {
+	@NotBlank
 	private String firstName;
+	@NotBlank
 	private String lastName;
+	@NotBlank
+	@Email
 	private String email;
 	private String dateOfBirth;
 

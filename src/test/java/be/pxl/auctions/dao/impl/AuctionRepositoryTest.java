@@ -1,6 +1,6 @@
 package be.pxl.auctions.dao.impl;
 
-import be.pxl.auctions.dao.AuctionRepository;
+import be.pxl.auctions.repository.AuctionRepository;
 import be.pxl.auctions.model.Auction;
 import be.pxl.auctions.model.builder.AuctionBuilder;
 import org.junit.jupiter.api.Test;

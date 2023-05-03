@@ -1,6 +1,6 @@
 package be.pxl.auctions.service;
 
-import be.pxl.auctions.dao.AuctionRepository;
+import be.pxl.auctions.repository.AuctionRepository;
 import be.pxl.auctions.model.Auction;
 import be.pxl.auctions.model.Bid;
 import be.pxl.auctions.model.User;
@@ -10,9 +10,7 @@ import be.pxl.auctions.rest.resource.BidDTO;
 import be.pxl.auctions.rest.resource.UserDTO;
 import be.pxl.auctions.util.exception.AuctionNotFoundException;
 import be.pxl.auctions.util.exception.InvalidDateException;
-import be.pxl.auctions.util.exception.RequiredFieldException;
 import org.apache.commons.lang3.StringUtils;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
@@ -26,8 +24,11 @@ public class AuctionService {
 
 	private static final DateTimeFormatter DATE_FORMAT = DateTimeFormatter.ofPattern("dd/MM/uuuu");
 
-	@Autowired
-	private AuctionRepository auctionRepository;
+	private final AuctionRepository auctionRepository;
+
+	public AuctionService(AuctionRepository auctionRepository) {
+		this.auctionRepository = auctionRepository;
+	}
 
 	public List<AuctionDTO> getAllAuctions() {
 		return auctionRepository.findAll().stream().map(this::mapToAuctionDTO).collect(Collectors.toList());
@@ -39,12 +40,6 @@ public class AuctionService {
 
 
 	public AuctionDTO createAuction(AuctionCreateResource auctionInfo) {
-		if (StringUtils.isBlank(auctionInfo.getDescription())) {
-			throw new RequiredFieldException("Description");
-		}
-		if (auctionInfo.getEndDate() == null) {
-			throw new RequiredFieldException("DateOfBirth");
-		}
 		Auction auction = mapToAuction(auctionInfo);
 		if (auction.getEndDate().isBefore(LocalDate.now())) {
 			throw new InvalidDateException("End date cannot be in the past.");

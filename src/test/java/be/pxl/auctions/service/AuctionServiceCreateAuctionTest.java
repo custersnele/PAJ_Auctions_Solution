@@ -1,12 +1,11 @@
 package be.pxl.auctions.service;
 
-import be.pxl.auctions.dao.AuctionRepository;
+import be.pxl.auctions.repository.AuctionRepository;
 import be.pxl.auctions.model.Auction;
 import be.pxl.auctions.model.builder.AuctionCreateResourceBuilder;
 import be.pxl.auctions.rest.resource.AuctionCreateResource;
 import be.pxl.auctions.rest.resource.AuctionDTO;
 import be.pxl.auctions.util.exception.InvalidDateException;
-import be.pxl.auctions.util.exception.RequiredFieldException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -43,20 +42,6 @@ class AuctionServiceCreateAuctionTest {
     @BeforeEach
     void init() {
         auctionCreateResource = AuctionCreateResourceBuilder.anAuctionCreateResource().build();
-    }
-
-    @Test
-    void throwsRequiredFieldExceptionWhenAuctionCreateResourceHasNoDescription() {
-        auctionCreateResource.setDescription("");
-        assertThrows(RequiredFieldException.class,
-                () -> auctionService.createAuction(auctionCreateResource));
-    }
-
-    @Test
-    void throwsRequiredFieldExceptionWhenAuctionCreateResourceHasNoDate() {
-        auctionCreateResource.setEndDate(null);
-        assertThrows(RequiredFieldException.class,
-                () -> auctionService.createAuction(auctionCreateResource));
     }
 
     @Test

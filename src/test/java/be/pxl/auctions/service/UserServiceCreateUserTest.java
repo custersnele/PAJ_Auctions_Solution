@@ -1,22 +1,17 @@
 package be.pxl.auctions.service;
 
-import be.pxl.auctions.dao.UserDao;
 import be.pxl.auctions.model.User;
+import be.pxl.auctions.repository.UserRepository;
 import be.pxl.auctions.rest.resource.UserCreateResource;
-import be.pxl.auctions.rest.resource.UserDTO;
 import be.pxl.auctions.util.exception.DuplicateEmailException;
 import be.pxl.auctions.util.exception.InvalidDateException;
-import be.pxl.auctions.util.exception.InvalidEmailException;
-import be.pxl.auctions.util.exception.RequiredFieldException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.AdditionalAnswers;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.time.LocalDate;
@@ -39,7 +34,7 @@ public class UserServiceCreateUserTest {
 	private static final LocalDate DOB = LocalDate.of(1983, 5,3);
 
 	@Mock
-	private UserDao userDao;
+	private UserRepository userRepository;
 	@InjectMocks
 	private UserService userService;
 	private UserCreateResource user;
@@ -55,36 +50,6 @@ public class UserServiceCreateUserTest {
 		user.setEmail(EMAIL);
 	}
 
-	@Test
-	public void throwsRequiredFieldExceptionWhenFirstNameNotGiven() {
-		user.setFirstName("");
-		assertThrows(RequiredFieldException.class, () -> userService.createUser(user));
-	}
-
-	@Test
-	public void throwsRequiredFieldExceptionWhenLastNameNotGiven() {
-		user.setLastName(null);
-		assertThrows(RequiredFieldException.class, () -> userService.createUser(user));
-	}
-
-	@Test
-	public void throwsRequiredFieldExceptionWhenEmailNotGiven() {
-		user.setEmail("    ");
-		assertThrows(RequiredFieldException.class, () -> userService.createUser(user));
-	}
-
-	@Test
-	public void throwsRequiredFieldExceptionWhenDateOfBirthNotGiven() {
-		user.setDateOfBirth(null);
-		assertThrows(RequiredFieldException.class, () -> userService.createUser(user));
-
-	}
-
-	@Test
-	public void throwsInvalidEmailExceptionWhenInvalidEmailGiven() {
-		user.setEmail("test");
-		assertThrows(InvalidEmailException.class, () -> userService.createUser(user));
-	}
 
 	@Test
 	public void throwsInvalidDateExceptionWhenDateOfBirthInFuture() {
@@ -94,16 +59,16 @@ public class UserServiceCreateUserTest {
 
 	@Test
 	public void throwsDuplicateEmailExceptionWhenEmailNotUnique() {
-		when(userDao.findUserByEmail(EMAIL)).thenReturn(Optional.of(new User()));
+		when(userRepository.findUserByEmail(EMAIL)).thenReturn(Optional.of(new User()));
 		assertThrows(DuplicateEmailException.class, () -> userService.createUser(user));
 	}
 
 	@Test
-	public void validUserIsSavedCorrectly() throws InvalidDateException, RequiredFieldException, InvalidEmailException, DuplicateEmailException {
-		when(userDao.findUserByEmail(EMAIL)).thenReturn(Optional.empty());
-		when(userDao.saveUser(any())).thenAnswer(returnsFirstArg());
+	public void validUserIsSavedCorrectly() throws InvalidDateException, DuplicateEmailException {
+		when(userRepository.findUserByEmail(EMAIL)).thenReturn(Optional.empty());
+		when(userRepository.save(any())).thenAnswer(returnsFirstArg());
 		userService.createUser(user);
-		verify(userDao).saveUser(userCaptor.capture());
+		verify(userRepository).save(userCaptor.capture());
 		User userSaved = userCaptor.getValue();
 		assertEquals(FIRSTNAME, userSaved.getFirstName());
 		assertEquals(LASTNAME, userSaved.getLastName());

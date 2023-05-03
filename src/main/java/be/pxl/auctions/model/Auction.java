@@ -2,7 +2,7 @@ package be.pxl.auctions.model;
 
 import be.pxl.auctions.util.exception.InvalidBidException;
 
-import javax.persistence.*;
+import jakarta.persistence.*;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
@@ -10,7 +10,6 @@ import java.util.Optional;
 
 @Entity
 @Table(name = "auctions")
-@NamedQueries(value = {@NamedQuery(name = "findAllAuctions", query = "select a from Auction a")})
 public class Auction {
     @Id
     @GeneratedValue

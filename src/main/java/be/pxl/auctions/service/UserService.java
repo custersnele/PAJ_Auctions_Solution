@@ -1,17 +1,12 @@
 package be.pxl.auctions.service;
 
-import be.pxl.auctions.dao.UserDao;
 import be.pxl.auctions.model.User;
+import be.pxl.auctions.repository.UserRepository;
 import be.pxl.auctions.rest.resource.UserCreateResource;
 import be.pxl.auctions.rest.resource.UserDTO;
-import be.pxl.auctions.util.EmailValidator;
 import be.pxl.auctions.util.exception.DuplicateEmailException;
 import be.pxl.auctions.util.exception.InvalidDateException;
-import be.pxl.auctions.util.exception.InvalidEmailException;
-import be.pxl.auctions.util.exception.RequiredFieldException;
 import be.pxl.auctions.util.exception.UserNotFoundException;
-import org.apache.commons.lang3.StringUtils;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
@@ -25,34 +20,22 @@ import java.util.stream.Collectors;
 public class UserService {
 	private static final DateTimeFormatter DATE_FORMAT = DateTimeFormatter.ofPattern("dd/MM/uuuu");
 
-	@Autowired
-	private UserDao userDao;
+	private final UserRepository userRepository;
+
+	public UserService(UserRepository userDao) {
+		this.userRepository = userDao;
+	}
 
 	public List<UserDTO> getAllUsers() {
-		return userDao.findAllUsers().stream().map(this::mapToUserDTO).collect(Collectors.toList());
+		return userRepository.findAll().stream().map(this::mapToUserDTO).collect(Collectors.toList());
 	}
 
 	public UserDTO getUserById(long userId) {
-		return userDao.findUserById(userId).map(this::mapToUserDTO).orElseThrow(()  -> new UserNotFoundException("Unable to find User with id [" + userId + "]"));
+		return userRepository.findById(userId).map(this::mapToUserDTO).orElseThrow(()  -> new UserNotFoundException("Unable to find User with id [" + userId + "]"));
 	}
 
-	public UserDTO createUser(UserCreateResource userInfo) throws RequiredFieldException, InvalidEmailException, DuplicateEmailException, InvalidDateException {
-		if (StringUtils.isBlank(userInfo.getFirstName())) {
-			throw new RequiredFieldException("FirstName");
-		}
-		if (StringUtils.isBlank(userInfo.getLastName())) {
-			throw new RequiredFieldException("LastName");
-		}
-		if (StringUtils.isBlank(userInfo.getEmail())) {
-			throw new RequiredFieldException("Email");
-		}
-		if (!EmailValidator.isValid(userInfo.getEmail())) {
-			throw new InvalidEmailException(userInfo.getEmail());
-		}
-		if (userInfo.getDateOfBirth() == null) {
-			throw new RequiredFieldException("DateOfBirth");
-		}
-		Optional<User> existingUser = userDao.findUserByEmail(userInfo.getEmail());
+	public UserDTO createUser(UserCreateResource userInfo) throws DuplicateEmailException, InvalidDateException {
+		Optional<User> existingUser = userRepository.findUserByEmail(userInfo.getEmail());
 		if (existingUser.isPresent()) {
 			throw new DuplicateEmailException(userInfo.getEmail());
 		}
@@ -60,7 +43,7 @@ public class UserService {
 		if (user.getDateOfBirth().isAfter(LocalDate.now())) {
 			throw new InvalidDateException("DateOfBirth cannot be in the future.");
 		}
-		return mapToUserDTO(userDao.saveUser(user));
+		return mapToUserDTO(userRepository.save(user));
 	}
 
 	private UserDTO mapToUserDTO(User user) {

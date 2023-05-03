@@ -6,12 +6,11 @@ import be.pxl.auctions.rest.resource.BidCreateResource;
 import be.pxl.auctions.rest.resource.BidDTO;
 import be.pxl.auctions.service.AuctionService;
 import be.pxl.auctions.service.BidService;
+import jakarta.validation.Valid;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
-import javax.validation.Valid;
 import java.util.List;
 
 @RestController
@@ -22,7 +21,6 @@ public class AuctionRest {
     private final AuctionService auctionService;
 	private final BidService bidService;
 
-	@Autowired
 	public AuctionRest(AuctionService auctionService, BidService bidService) {
 		this.auctionService = auctionService;
 		this.bidService = bidService;
